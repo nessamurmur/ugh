@@ -1,15 +1,16 @@
 package com.niftyn8.app
 
-case class Issue(slug: String, name: String)
+case class Issue(repo: String, text: String, time_wasted: Int,
+                 id: String = java.util.UUID.randomUUID.toString, reporter: String)
 case class IssueError(error: String = "No issue could be found by that slug.")
 case class IssueWrapper(issue: Issue)
 
 case class IssueData(issues: List[Issue]) {
-  def +(issue: Issue): IssueData = IssueData(issues :+ issue)
+  def +(issue: Issue): IssueData = IssueData(issue :: issues)
 
   def -(issue: Issue): IssueData = IssueData(issues diff List(issue))
 
-  def find(slug: String): Option[Issue] = issues find(_.slug == slug)
+  def find(id: String): Option[Issue] = issues find(_.id == id)
 }
 
 class IssuesController extends UghJsonServlet {
@@ -25,16 +26,16 @@ class IssuesController extends UghJsonServlet {
     issueData
   }
 
-  get("/:slug") {
-    val issue = issueData.find(params("slug"))
+  get("/:id") {
+    val issue = issueData.find(params("id"))
     issue match {
       case Some(i) => IssueWrapper(i)
       case None => IssueError()
     }
   }
 
-  delete("/:slug") {
-    val issue = issueData.find(params("slug"))
+  delete("/:id") {
+    val issue = issueData.find(params("id"))
     issue match {
       case Some(i) => {
         issueData = issueData - i
