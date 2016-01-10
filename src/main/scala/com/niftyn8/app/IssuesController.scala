@@ -7,6 +7,8 @@ case class IssueWrapper(issue: Issue)
 case class IssueData(issues: List[Issue]) {
   def +(issue: Issue): IssueData = IssueData(issues :+ issue)
 
+  def -(issue: Issue): IssueData = IssueData(issues diff List(issue))
+
   def find(slug: String): Option[Issue] = issues find(_.slug == slug)
 }
 
@@ -27,6 +29,17 @@ class IssuesController extends UghJsonServlet {
     val issue = issueData.find(params("slug"))
     issue match {
       case Some(i) => IssueWrapper(i)
+      case None => IssueError()
+    }
+  }
+
+  delete("/:slug") {
+    val issue = issueData.find(params("slug"))
+    issue match {
+      case Some(i) => {
+        issueData = issueData - i
+        issueData
+      }
       case None => IssueError()
     }
   }
