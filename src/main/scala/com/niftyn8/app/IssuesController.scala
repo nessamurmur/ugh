@@ -5,18 +5,16 @@ case class IssueError(error: String = "No issue could be found by that slug.")
 case class IssueWrapper(issue: Issue)
 
 case class IssueData(issues: List[Issue]) {
-  def all(): List[Issue] = issues
+  def +(issue: Issue): IssueData = IssueData(issues :+ issue)
 
-  def +(issue: Issue): IssueData = IssueData(all :+ issue)
-
-  def find(slug: String): Option[Issue] = all() find(_.slug == slug)
+  def find(slug: String): Option[Issue] = issues find(_.slug == slug)
 }
 
 class IssuesController extends UghJsonServlet {
   protected var issueData = IssueData(List())
 
   get("/") {
-    issueData.all()
+    issueData
   }
 
   post("/") {
