@@ -23,7 +23,7 @@ class IssuesController extends UghJsonServlet {
   post("/") {
     val issue = parsedBody.extract[Issue]
     issueData = issueData + issue
-    issueData
+    IssueWrapper(issue)
   }
 
   get("/:id") {
