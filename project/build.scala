@@ -28,7 +28,8 @@ object UghBuild extends Build {
         "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
         "org.scalatra" %% "scalatra-specs2" % ScalatraVersion % "test",
         "org.scalatra" %% "scalatra-json" % ScalatraVersion,
-        "org.json4s"   %% "json4s-jackson" % "3.3.0",
+        "org.json4s"   %% "json4s-native" % "3.3.0",
+        "org.scalatra" %% "scalatra-swagger"  % ScalatraVersion,
         "ch.qos.logback" % "logback-classic" % "1.1.3" % "runtime",
         "org.eclipse.jetty" % "jetty-webapp" % "9.2.14.v20151106" % "container",
         "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided"
