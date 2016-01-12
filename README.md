@@ -3,6 +3,12 @@
 Ugh is a learning project so I can learn [Scalatra](http://www.scalatra.org/).
 If I stay motivated long enough it'll be more...
 
+## API Documentation
+
+Documentation is generated with [Swagger](http://swagger.io/).
+
+You can view the API docs at http://niftyn8.github.io/ugh
+
 ## Build & Run
 
 ```bash
