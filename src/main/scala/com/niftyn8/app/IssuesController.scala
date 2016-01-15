@@ -3,10 +3,10 @@ package com.niftyn8.app
 import org.json4s.{Formats, DefaultFormats}
 import org.scalatra.json.NativeJsonSupport
 import org.scalatra.swagger.{Swagger, SwaggerSupport}
+import org.scalatra._
 
 case class Issue(repo: String, text: String, time_wasted: Int,
                  id: String = java.util.UUID.randomUUID.toString, reporter: String)
-case class IssueError(error: String = "No issue could be found by that slug.")
 case class IssueWrapper(issue: Issue)
 
 case class IssueData(issues: List[Issue]) {
@@ -18,7 +18,7 @@ case class IssueData(issues: List[Issue]) {
 }
 
 class IssuesController(implicit val swagger: Swagger) extends UghServlet with NativeJsonSupport with SwaggerSupport {
-  override protected val applicationName = Some("Issues")
+  override protected val applicationName = Option("Issues")
   protected val applicationDescription = "The issues API exposes operations for tracking problems you hit during development."
 
   protected implicit lazy val jsonFormats: Formats = DefaultFormats
@@ -46,9 +46,14 @@ class IssuesController(implicit val swagger: Swagger) extends UghServlet with Na
       parameter queryParam[String]("reporter").description("A username for the person reporterd the problem."))
 
   post("/", operation(createIssue)) {
-    val issue = parsedBody.extract[Issue]
-    issueData = issueData + issue
-    IssueWrapper(issue)
+    val issue = parsedBody.extractOpt[Issue]
+    issue match {
+      case Some(i) =>
+        issueData = issueData + i
+        IssueWrapper(i)
+      case None =>
+        UnprocessableEntity("You were missing one or more required params")
+    }
   }
 
   val findIssue =
@@ -61,7 +66,7 @@ class IssuesController(implicit val swagger: Swagger) extends UghServlet with Na
     val issue = issueData.find(params("id"))
     issue match {
       case Some(i) => IssueWrapper(i)
-      case None => IssueError()
+      case None => NotFound("No issue could be found by that ID")
     }
   }
 
@@ -74,11 +79,10 @@ class IssuesController(implicit val swagger: Swagger) extends UghServlet with Na
   delete("/:id", operation(deleteIssue)) {
     val issue = issueData.find(params("id"))
     issue match {
-      case Some(i) => {
+      case Some(i) =>
         issueData = issueData - i
         issueData
-      }
-      case None => IssueError()
+      case None => NotFound("No issue could be found by that ID")
     }
   }
 }
